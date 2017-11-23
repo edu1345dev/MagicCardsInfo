@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             },10);
 
+
+
 //            Document doc = Jsoup.parse(doc1.html());
 //
 //            Element content = doc.getElementById("content");
