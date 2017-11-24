@@ -72,86 +72,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void getLigamagicPage() {
         try {
-            final Document doc1 = Jsoup.connect("https://www.ligamagic.com.br/?view=cards/search&card=tree%20of%20tales").get();
+            final Document doc1 = Jsoup.connect("http://www.ligamagic.com.br/?view=cards/card&card=Hazoret%20the%20Fervent").get();
 
-//            Log.d(TAG, "getLigamagicPage: "+doc1.getAllElements());
-
-            doc1.getAllElements().filter(new NodeFilter() {
-                @Override
-                public FilterResult head(Node node, int depth) {
-
-//                    Log.d(TAG, "head Node "+node);
-//
-//                    String attr = node.attr("type").toString();
-//
-//                    Log.d(TAG, "head from Node "+attr);
-//
-//                    TextView textView = new TextView(getBaseContext());
-//                    textView.setText(attr);
-//
-//                    String fromTv = (String) textView.getText();
-//
-//                    Log.d(TAG, "head texView: "+fromTv);
-//
-//                    String replaced = fromTv.replace("\t","").replace("\n","").replace("<","").replace(">","");
-//
-//                    Log.d(TAG, "head replaced: "+replaced);
-                    return null;
-                }
-
-                @Override
-                public FilterResult tail(Node node, int depth) {
-//                    Log.d(TAG, "tail: "+node);
-                    return null;
-                }
-            });
+            Log.d(TAG, "getLigamagicPage: "+doc1.getAllElements());
 
             Elements scriptElements = doc1.getElementsByTag("script");
 
             for (Element element: scriptElements) {
                 for (DataNode node : element.dataNodes()){
-                    if (node.getWholeData().contains("VETiRaridade"))
+                    if (node.getWholeData().contains("VETiRaridade")){
+
+                    }
                     Log.d(TAG, "data nodes: "+ node.getWholeData());
                 }
             }
 
             Log.d(TAG, "------------------------------------------------------");
 
-            Handler handler = new Handler(getMainLooper());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-//                    Log.d(TAG, "run: "+doc1.getElementsByClass("menor-preco").text());
-//
-//                    Log.d(TAG, "run: "+doc1.getElementsByClass("precos").html());
-
-//                    Elements precos = doc1.getElementsByClass("menorPreco");
-//
-//                    Elements menorPreco = precos.
-
-//                    for (int i = 0; i < doc1.getElementsByClass("precos").eachText().size(); i++) {
-//                        Log.d(TAG, "run: "+doc1.getElementsByClass("precos").eachText().get(i));
-//                    }
-
-//                    tv.setText(node.attr("type"));
-//                    tv.setText(doc1.getElementsContainingText("valor").toString());
-                }
-            },10);
-
-
-
-//            Document doc = Jsoup.parse(doc1.html());
-//
-//            Element content = doc.getElementById("content");
-//
-//            Elements links = content.getElementsByTag("a");
-//
-//            for (Element link : links) {
-//                String linkHref = link.attr("href");
-//                Log.d(TAG, "getLigamagicPage: "+linkHref);
-//                String linkText = link.text();
-//                Log.d(TAG, "getLigamagicPage: "+linkText);
-//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
