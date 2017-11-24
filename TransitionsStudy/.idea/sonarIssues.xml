@@ -13,6 +13,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$USER_HOME$/Documents/Pixida_Repo/BMW_BR_Touchcommand/mobile/src/main/java/com/bmw/tc/cds/media/shuffle/ControlRandom.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../BMW_BR_Touchcommand/mobile/src/main/java/com/bmw/tc/presentation/media/abstractplaylist/AbstractMediaPlaylistFragment.java">
           <value>
             <set />
@@ -43,6 +48,21 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/josesantos/transitionsstudy/Constants.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/josesantos/transitionsstudy/MagicInfoFields.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/josesantos/transitionsstudy/MagicInfoParser.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/example/josesantos/transitionsstudy/Main2Activity.java">
           <value>
             <set />
@@ -68,7 +88,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/values/colors.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/build.gradle">
           <value>
             <set />
           </value>
