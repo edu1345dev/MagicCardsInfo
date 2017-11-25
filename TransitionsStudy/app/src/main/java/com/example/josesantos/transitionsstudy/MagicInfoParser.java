@@ -131,6 +131,24 @@ public class MagicInfoParser {
         Log.d(TAG, "parse: finish parsing");
     }
 
+    public List<MagicCardInfo> getListOfCards(){
+        List<MagicCardInfo> list = new ArrayList<>();
+
+        for (int i = 0; i < listImagem.size(); i++) {
+            MagicCardInfo card = new MagicCardInfo();
+            card.setImagem(listImagem.get(i));
+            card.setRaridade(listRaridade.get(i));
+            card.setNomeEdicaoOficial(listNomeOficial.get(i));
+            card.setMenorPreco(listMenorPreco.get(i));
+            card.setMedioPreco(listMedioPreco.get(i));
+            card.setMaiorPreco(listMaiorPreco.get(i));
+
+            list.add(card);
+        }
+
+        return list;
+    }
+
     public List<String> getListRaridade() {
         return listRaridade;
     }
