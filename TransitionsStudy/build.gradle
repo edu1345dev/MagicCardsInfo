@@ -5,6 +5,8 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "https://maven.repository.redhat.com/ga/"}
+        maven { url "https://mvnrepository.com/"}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -21,6 +23,10 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url 'https://maven.google.com' }
+        maven { url "https://maven.repository.redhat.com/ga/"}
+        maven { url "https://mvnrepository.com/"}
+
+
     }
 }
 

@@ -310,6 +310,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showRecycler(LojasInfoParser parser) {
+
+
+
         ((LojasAdapter)recyclerView.getAdapter()).setListLojas(parser.getLojasInfo());
         recyclerView.getAdapter().notifyDataSetChanged();
 
