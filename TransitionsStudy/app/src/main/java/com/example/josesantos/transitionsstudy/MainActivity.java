@@ -3,6 +3,7 @@ package com.example.josesantos.transitionsstudy;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,7 +13,11 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -24,6 +29,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -169,20 +175,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureQuery() {
-        etNomeCarta.setText("Atog");
-
         etNomeCarta.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    startQuery(etNomeCarta.getText().toString());
-
                     Log.d(TAG, "START SEARCH");
+                    requestCardsFromApi();
                     return false;
                 }
                 return false;
             }
         });
+    }
+
+    private void requestCardsFromApi() {
+        List<String> list = new ArrayList<>();
+        list.add("Atog");
+        list.add("Raio");
+        list.add("Capturar Pensamento");
+
+        showPopWindow(list);
+    }
+
+    private void showPopWindow(List<String> resultsList) {
+        String[] arrayString = resultsList.toArray(new String[resultsList.size()]);
+
+        final PopupWindow popupWindow = new PopupWindow(this);
+        ListView listView = new ListView(this);
+        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, arrayString ));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String query = adapterView.getAdapter().getItem(i).toString();
+                startQuery(query);
+                popupWindow.dismiss();
+            }
+        });
+        popupWindow.setContentView(listView);
+        popupWindow.showAsDropDown(etNomeCarta);
+
+
     }
 
     private void startQuery(String query) {
