@@ -1,6 +1,5 @@
 package com.example.josesantos.transitionsstudy.presentation;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.view.ViewPager;
@@ -12,9 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -80,114 +77,15 @@ public class MainActivity extends AppCompatActivity {
         configureRecycler();
         configureViewPager();
 
-        cards.add("Ancient Grudge");
-        cards.add("Annul");
-        cards.add("Ash Barrens");
-        cards.add("Atog");
-        cards.add("Augur of Bolas");
-        cards.add("Aura Flux");
-        cards.add("Beetleback Chief");
-        cards.add("Bone to Ash");
-        cards.add("Bonesplitter");
-        cards.add("Chainer's Edict");
-        cards.add("Chromatic Star");
-        cards.add("Compulsive Research");
-        cards.add("Darksteel Citadel");
-        cards.add("Curse of the Bloody Tome");
-        cards.add("Daze");
-        cards.add("Devour Flesh");
-        cards.add("Dismal Backwater");
-        cards.add("Disfigure");
-        cards.add("Electrostatic Bolt");
-        cards.add("Flame Slash");
-        cards.add("Frogmite");
-        cards.add("Hydroblast");
-        cards.add("Izzet Boilerworks");
-        cards.add("Izzet Boilerworks");
-        cards.add("Gearseeker Serpent");
-        cards.add("Ancient Grudge");
-        cards.add("Annul");
-        cards.add("Ash Barrens");
-        cards.add("Atog");
-        cards.add("Augur of Bolas");
-        cards.add("Aura Flux");
-        cards.add("Beetleback Chief");
-        cards.add("Bone to Ash");
-        cards.add("Bonesplitter");
-        cards.add("Chainer's Edict");
-        cards.add("Chromatic Star");
-        cards.add("Compulsive Research");
-        cards.add("Darksteel Citadel");
-        cards.add("Curse of the Bloody Tome");
-        cards.add("Daze");
-        cards.add("Devour Flesh");
-        cards.add("Dismal Backwater");
-        cards.add("Disfigure");
-        cards.add("Electrostatic Bolt");
-        cards.add("Flame Slash");
-        cards.add("Frogmite");
-        cards.add("Hydroblast");
-        cards.add("Izzet Boilerworks");
-        cards.add("Izzet Boilerworks");
-        cards.add("Gearseeker Serpent");
-        cards.add("Ancient Grudge");
-        cards.add("Annul");
-        cards.add("Ash Barrens");
-        cards.add("Atog");
-        cards.add("Augur of Bolas");
-        cards.add("Aura Flux");
-        cards.add("Beetleback Chief");
-        cards.add("Bone to Ash");
-        cards.add("Bonesplitter");
-        cards.add("Chainer's Edict");
-        cards.add("Chromatic Star");
-        cards.add("Compulsive Research");
-        cards.add("Darksteel Citadel");
-        cards.add("Curse of the Bloody Tome");
-        cards.add("Daze");
-        cards.add("Devour Flesh");
-        cards.add("Dismal Backwater");
-        cards.add("Disfigure");
-        cards.add("Electrostatic Bolt");
-        cards.add("Flame Slash");
-        cards.add("Frogmite");
-        cards.add("Hydroblast");
-        cards.add("Izzet Boilerworks");
-        cards.add("Izzet Boilerworks");
-        cards.add("Gearseeker Serpent");
-        cards.add("Ancient Grudge");
-        cards.add("Annul");
-        cards.add("Ash Barrens");
-        cards.add("Atog");
-        cards.add("Augur of Bolas");
-        cards.add("Aura Flux");
-        cards.add("Beetleback Chief");
-        cards.add("Bone to Ash");
-        cards.add("Bonesplitter");
-        cards.add("Chainer's Edict");
-        cards.add("Chromatic Star");
-        cards.add("Compulsive Research");
-        cards.add("Darksteel Citadel");
-        cards.add("Curse of the Bloody Tome");
-        cards.add("Daze");
-        cards.add("Devour Flesh");
-        cards.add("Dismal Backwater");
-        cards.add("Disfigure");
-        cards.add("Electrostatic Bolt");
-        cards.add("Flame Slash");
-        cards.add("Frogmite");
-        cards.add("Hydroblast");
-        cards.add("Izzet Boilerworks");
-        cards.add("Izzet Boilerworks");
-        cards.add("Gearseeker Serpent");
+
 
     }
 
     private void configurePopWindow() {
         popupWindow = new PopupWindow(this);
-        popupWindow.setHeight(600);
         popupWindow.setBackgroundDrawable(getDrawable(R.drawable.search_background));
         popupWindow.setOutsideTouchable(true);
+
     }
 
     private void configureViewPager() {
@@ -200,28 +98,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureQuery() {
-        etNomeCarta.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+        etNomeCarta.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                    requestCardsFromApi(etNomeCarta.getText().toString());
+                requestCardsFromApi(etNomeCarta.getText().toString());
 
-                    return false;
-                }
                 return false;
             }
+            return false;
         });
 
         etNomeCarta.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                // do nothing
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                //do nothing
             }
 
             @Override
@@ -240,14 +135,12 @@ public class MainActivity extends AppCompatActivity {
             queryHandler.removeCallbacks(searchRunnable);
         }
 
-        queryHandler.postDelayed(getRunnable(), 500);
+        queryHandler.postDelayed(getSearchRunnable(), 500);
 
     }
 
-    private Runnable getRunnable() {
-
+    private Runnable getSearchRunnable() {
         searchRunnable = () -> requestCardsFromApi(etNomeCarta.getText().toString());
-
         return searchRunnable;
     }
 
@@ -286,20 +179,20 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-
-
         showPopWindow(removeRepeateadResults(value));
     }
 
-    private List<String> removeRepeateadResults(MagicApiResponse reponse) {
+    private List<String> removeRepeateadResults(MagicApiResponse apiResponse) {
         List<String> cardsResult = new ArrayList<>();
 
-        for (MagicApiCard card :
-                reponse.getCards()) {
-
+        for (MagicApiCard card : apiResponse.getCards()) {
             if (!cardsResult.contains(card.getName())){
                 cardsResult.add(card.getName());
             }
+        }
+
+        if (cardsResult.isEmpty()){
+            cardsResult.add(getString(R.string.no_results_found));
         }
 
         return cardsResult;
@@ -310,17 +203,22 @@ public class MainActivity extends AppCompatActivity {
 
         ListView listView = new ListView(this);
         listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayString));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String query = adapterView.getAdapter().getItem(i).toString();
-                startQuery(query);
-                popupWindow.dismiss();
-            }
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            String query = adapterView.getAdapter().getItem(i).toString();
+            startQuery(query);
+            popupWindow.dismiss();
         });
 
+        popupWindow.setHeight(resultsList.size()*200);
+        if (popupWindow.getHeight() > 600){
+            popupWindow.setHeight(600);
+        }
+
         popupWindow.setContentView(listView);
+
         popupWindow.showAsDropDown(etNomeCarta);
+
+
     }
 
     private void startQuery(String query) {
@@ -332,12 +230,7 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
 
         Handler handler = new Handler(thread.getLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                getLigamagicPage();
-            }
-        });
+        handler.post(this::getLigamagicPage);
     }
 
     private void showProgress() {
@@ -360,9 +253,6 @@ public class MainActivity extends AppCompatActivity {
     private void getLigamagicPage() {
         try {
 
-//            String card = cards.get(loadController);
-//            Log.d(TAG, "INCREMENT CONTROLLER "+card);
-
             String ligamagicUrl = "http://www.ligamagic.com.br/?view=cards/card&card=";
             String scgUrl = "http://sales.starcitygames.com/search.php?substring=";
 
@@ -384,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
                         final MagicInfoParser parser = new MagicInfoParser();
                         parser.parse(node.getWholeData());
 
-
                         final LojasInfoParser lojasInfoParser1 = new LojasInfoParser();
                         lojasInfoParser1.parse(doc1);
 
@@ -392,12 +281,9 @@ public class MainActivity extends AppCompatActivity {
 //
 //                        continueLoadind();
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showContent(parser);
-                                showRecycler(lojasInfoParser1);
-                            }
+                        runOnUiThread(() -> {
+                            showContent(parser);
+                            showRecycler(lojasInfoParser1);
                         });
 
                     }

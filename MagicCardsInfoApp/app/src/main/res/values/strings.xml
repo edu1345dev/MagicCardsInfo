@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TransitionsStudy</string>
+    <string name="no_results_found">No results found</string>
 </resources>
