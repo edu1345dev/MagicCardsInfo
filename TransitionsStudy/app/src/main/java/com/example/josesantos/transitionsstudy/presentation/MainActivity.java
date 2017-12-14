@@ -1,14 +1,15 @@
-package com.example.josesantos.transitionsstudy;
+package com.example.josesantos.transitionsstudy.presentation;
 
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,6 +22,14 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.josesantos.transitionsstudy.LojaInfo;
+import com.example.josesantos.transitionsstudy.LojasInfoParser;
+import com.example.josesantos.transitionsstudy.MagicInfoParser;
+import com.example.josesantos.transitionsstudy.R;
+import com.example.josesantos.transitionsstudy.data.api.magicApi.MagicApiService;
+import com.example.josesantos.transitionsstudy.data.entity.MagicApiCard;
+import com.example.josesantos.transitionsstudy.data.entity.MagicApiResponse;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
@@ -29,8 +38,11 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvNotFound;
     int loadController = 0;
     List<String> cards = new ArrayList<>();
+    MagicApiService service = new MagicApiService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void configureRecycler() {
         recyclerView.setLayoutManager(new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(new LojasAdapter(new ArrayList<LojaInfo>()));
+        recyclerView.setAdapter(new LojasAdapter(new ArrayList<>()));
     }
 
     private void configureQuery() {
@@ -180,21 +193,73 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     Log.d(TAG, "START SEARCH");
-                    requestCardsFromApi();
+                    String query = etNomeCarta.getText().toString();
+
+                    if (query.length() > 3){
+                        requestCardsFromApi(etNomeCarta.getText().toString());
+                    }
+
                     return false;
                 }
                 return false;
             }
         });
+
+        etNomeCarta.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                Log.d(TAG, "afterTextChanged: "+editable.toString());
+
+                String query = etNomeCarta.getText().toString();
+
+                if (query.length() > 3){
+                    requestCardsFromApi(etNomeCarta.getText().toString());
+                }
+            }
+        });
     }
 
-    private void requestCardsFromApi() {
-        List<String> list = new ArrayList<>();
-        list.add("Atog");
-        list.add("Raio");
-        list.add("Capturar Pensamento");
+    private void requestCardsFromApi(String query) {
+        service.getMagicCardsByName(query)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<MagicApiResponse>() {
+                    @Override
+                    public void onNext(MagicApiResponse value) {
+                        generateListToAdapter(value);
+                    }
 
-        showPopWindow(list);
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: "+e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void generateListToAdapter(MagicApiResponse value) {
+        List<String> cardsResult = new ArrayList<>();
+
+        for (MagicApiCard card :
+                value.getCards()) {
+            cardsResult.add(card.getName());
+        }
+
+        showPopWindow(cardsResult);
     }
 
     private void showPopWindow(List<String> resultsList) {
@@ -257,28 +322,43 @@ public class MainActivity extends AppCompatActivity {
 //            String card = cards.get(loadController);
 //            Log.d(TAG, "INCREMENT CONTROLLER "+card);
 
+            String ligamagicUrl = "http://www.ligamagic.com.br/?view=cards/card&card=";
+            String scgUrl = "http://sales.starcitygames.com/search.php?substring=";
+
             final Document doc1 =
-                    Jsoup.connect("http://www.ligamagic.com.br/?view=cards/card&card="+queryValue).get();
+                    Jsoup.connect(ligamagicUrl+queryValue).get();
+
+            Log.d(TAG, "doc: "+doc1.html());
 
             Elements scriptElements = doc1.getElementsByTag("script");
 
+            final LojasInfoParser lojasInfoParser = new LojasInfoParser();
+            lojasInfoParser.parse(doc1);
+
             for (Element element: scriptElements) {
                 for (DataNode node : element.dataNodes()){
+                    Log.d(TAG, "node: "+node.getWholeData());
                     if (node.getWholeData().contains("VETiRaridade")){
 
-                        MagicInfoParser parser = new MagicInfoParser();
+                        final MagicInfoParser parser = new MagicInfoParser();
                         parser.parse(node.getWholeData());
 
-                        handleOnMainThread(parser);
 
-                        LojasInfoParser lojasInfoParser = new LojasInfoParser();
-                        lojasInfoParser.parse(doc1);
+                        final LojasInfoParser lojasInfoParser1 = new LojasInfoParser();
+                        lojasInfoParser1.parse(doc1);
 
 //                        loadController++;
 //
 //                        continueLoadind();
 
-                        handleOnMainThread(lojasInfoParser);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showContent(parser);
+                                showRecycler(lojasInfoParser1);
+                            }
+                        });
+
                     }
                 }
             }
@@ -301,26 +381,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void handleNotFoundOnMaindThread() {
-        Handler handler = new Handler(getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                noResultFound();
-            }
-        });
-    }
-
-    private void handleOnMainThread(final MagicInfoParser parser) {
-        Handler handler = new Handler(getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                showContent(parser);
-            }
-        });
-    }
-
     private void showContent(MagicInfoParser parser) {
         CardsPagerAdapter cardsPagerAdapter = new CardsPagerAdapter(getSupportFragmentManager());
         cardsPagerAdapter.setListCards(parser.getListOfCards());
@@ -331,20 +391,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.getAdapter().notifyDataSetChanged();
     }
 
-    private void handleOnMainThread(final LojasInfoParser parser) {
-        Handler handler = new Handler(getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                showRecycler(parser);
-            }
-        });
-    }
-
     private void showRecycler(LojasInfoParser parser) {
-
-
-
         ((LojasAdapter)recyclerView.getAdapter()).setListLojas(parser.getLojasInfo());
         recyclerView.getAdapter().notifyDataSetChanged();
 

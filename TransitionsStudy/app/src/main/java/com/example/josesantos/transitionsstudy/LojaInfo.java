@@ -1,14 +1,21 @@
 package com.example.josesantos.transitionsstudy;
 
+import com.opencsv.bean.CsvBindByName;
+
 /**
  * Created by josesantos on 24/11/17.
  */
 
-class LojaInfo {
+public class LojaInfo {
+    @CsvBindByName
     private String nome;
+    @CsvBindByName
     private String edition;
+    @CsvBindByName
     private String price;
+    @CsvBindByName
     private String promoPrice;
+    @CsvBindByName
     private String qtd;
 
     public String getNome() {

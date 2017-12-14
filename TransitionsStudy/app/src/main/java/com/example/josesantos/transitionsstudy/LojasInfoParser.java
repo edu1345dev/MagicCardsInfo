@@ -17,7 +17,7 @@ import java.util.List;
 
 public class LojasInfoParser {
 
-    List<LojaInfo> lojasInfo = new ArrayList<>();
+    public List<LojaInfo> lojasInfo = new ArrayList<>();
 
     private static String CURRENCY = "R$";
     private static String QUANTITY = "unid";
@@ -145,11 +145,3 @@ public class LojasInfoParser {
         return lojasInfo;
     }
 }
-
-//parse: <tr class="pointer zebra" onclick="openCardMobile('e1452263');">
-//<td class="banner-loja"><a href="b/?p=e1452263" target="_blank"><img border="0" class="icon" src="//arquivos.objects.liquidweb.services/ecom/comparador/15146.jpg" width="101" height="30" title="Cabala MtG"></a></td>
-//<td><a href="./?view=cards/search&amp;card=ed=rvb" class="preto"><img src="//arquivos.objects.liquidweb.services/ed_mtg/RVB_U.gif" title="Limitierte Auflage" class="icon" height="21"><font class="col-mobile-hide font-margin"> Limitierte Auflage </font></a><font class="col-desktop-hide"> </font></td>
-//<td><p class="lj b"> <font color="gray"><s>R$ 5,50</s></font> <br> R$ 4,95 </p></td>
-//<td><p>5 unids.</p></td>
-//<td class="col-5 col-mobile-hide"><a target="_blank" href="b/?p=e1452263" class="direita botao col-mobile-hide">Ir à loja</a></td>
-//</tr>
