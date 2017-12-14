@@ -1,4 +1,4 @@
-package com.example.lib;
+package com.android.lib;
 
 public class myClass {
 }

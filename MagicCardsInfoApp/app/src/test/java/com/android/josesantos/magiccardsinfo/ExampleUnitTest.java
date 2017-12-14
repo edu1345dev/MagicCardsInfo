@@ -1,4 +1,4 @@
-package com.android.openbeans;
+package com.android.josesantos.magiccardsinfo;
 
 import org.junit.Test;
 

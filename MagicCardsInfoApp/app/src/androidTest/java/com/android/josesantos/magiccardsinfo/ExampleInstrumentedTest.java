@@ -1,4 +1,4 @@
-package com.android.openbeans;
+package com.android.josesantos.magiccardsinfo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.openbeans.test", appContext.getPackageName());
+        assertEquals("com.example.josesantos.transitionsstudy", appContext.getPackageName());
     }
 }
