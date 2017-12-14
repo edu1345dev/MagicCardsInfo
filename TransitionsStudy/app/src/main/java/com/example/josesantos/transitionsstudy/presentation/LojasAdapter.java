@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.josesantos.transitionsstudy.LojaInfo;
+import com.example.josesantos.transitionsstudy.data.ligamagic.LojaInfo;
 import com.example.josesantos.transitionsstudy.R;
 
 import java.util.List;

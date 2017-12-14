@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.josesantos.transitionsstudy.MagicCardInfo;
+import com.example.josesantos.transitionsstudy.data.ligamagic.MagicCardInfo;
 import com.example.josesantos.transitionsstudy.R;
 
 /**

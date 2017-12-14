@@ -1,5 +1,6 @@
 package com.example.josesantos.transitionsstudy.presentation;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.view.ViewPager;
@@ -13,6 +14,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,9 +24,8 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.josesantos.transitionsstudy.LojaInfo;
-import com.example.josesantos.transitionsstudy.LojasInfoParser;
-import com.example.josesantos.transitionsstudy.MagicInfoParser;
+import com.example.josesantos.transitionsstudy.data.ligamagic.LojasInfoParser;
+import com.example.josesantos.transitionsstudy.data.ligamagic.MagicInfoParser;
 import com.example.josesantos.transitionsstudy.R;
 import com.example.josesantos.transitionsstudy.data.api.magicApi.MagicApiService;
 import com.example.josesantos.transitionsstudy.data.entity.MagicApiCard;
@@ -58,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     int loadController = 0;
     List<String> cards = new ArrayList<>();
     MagicApiService service = new MagicApiService();
+    private PopupWindow popupWindow;
+    private Handler queryHandler;
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         tvNotFound = findViewById(R.id.tv_not_found);
 
         configureQuery();
+        configurePopWindow();
         configureRecycler();
         configureViewPager();
 
@@ -178,12 +183,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void configurePopWindow() {
+        popupWindow = new PopupWindow(this);
+        popupWindow.setHeight(600);
+        popupWindow.setBackgroundDrawable(getDrawable(R.drawable.search_background));
+        popupWindow.setOutsideTouchable(true);
+    }
+
     private void configureViewPager() {
         viewPager.setAdapter(new CardsPagerAdapter(getSupportFragmentManager()));
     }
 
     private void configureRecycler() {
-        recyclerView.setLayoutManager(new GridLayoutManager(this,2, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(new LojasAdapter(new ArrayList<>()));
     }
 
@@ -192,12 +204,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    Log.d(TAG, "START SEARCH");
-                    String query = etNomeCarta.getText().toString();
 
-                    if (query.length() > 3){
-                        requestCardsFromApi(etNomeCarta.getText().toString());
-                    }
+                    requestCardsFromApi(etNomeCarta.getText().toString());
 
                     return false;
                 }
@@ -218,18 +226,38 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.d(TAG, "afterTextChanged: "+editable.toString());
-
-                String query = etNomeCarta.getText().toString();
-
-                if (query.length() > 3){
-                    requestCardsFromApi(etNomeCarta.getText().toString());
-                }
+                delayQueryStart();
             }
         });
     }
 
+    private void delayQueryStart() {
+        if (queryHandler == null) {
+            queryHandler = new Handler();
+        }
+
+        if (searchRunnable != null) {
+            queryHandler.removeCallbacks(searchRunnable);
+        }
+
+        queryHandler.postDelayed(getRunnable(), 500);
+
+    }
+
+    private Runnable getRunnable() {
+
+        searchRunnable = () -> requestCardsFromApi(etNomeCarta.getText().toString());
+
+        return searchRunnable;
+    }
+
     private void requestCardsFromApi(String query) {
+        if (query.equals("")) {
+            return;
+        }
+
+        showProgress();
+
         service.getMagicCardsByName(query)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -241,33 +269,47 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError: "+e.getMessage());
+                        Log.d(TAG, "onError: " + e.getMessage());
+                        hideProgress();
                     }
 
                     @Override
                     public void onComplete() {
-
+                        hideProgress();
                     }
                 });
     }
 
     private void generateListToAdapter(MagicApiResponse value) {
+        if (value.getCards().isEmpty()) {
+            popupWindow.dismiss();
+            return;
+        }
+
+
+
+        showPopWindow(removeRepeateadResults(value));
+    }
+
+    private List<String> removeRepeateadResults(MagicApiResponse reponse) {
         List<String> cardsResult = new ArrayList<>();
 
         for (MagicApiCard card :
-                value.getCards()) {
-            cardsResult.add(card.getName());
+                reponse.getCards()) {
+
+            if (!cardsResult.contains(card.getName())){
+                cardsResult.add(card.getName());
+            }
         }
 
-        showPopWindow(cardsResult);
+        return cardsResult;
     }
 
     private void showPopWindow(List<String> resultsList) {
         String[] arrayString = resultsList.toArray(new String[resultsList.size()]);
 
-        final PopupWindow popupWindow = new PopupWindow(this);
         ListView listView = new ListView(this);
-        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, arrayString ));
+        listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayString));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -276,10 +318,9 @@ public class MainActivity extends AppCompatActivity {
                 popupWindow.dismiss();
             }
         });
+
         popupWindow.setContentView(listView);
         popupWindow.showAsDropDown(etNomeCarta);
-
-
     }
 
     private void startQuery(String query) {
@@ -306,12 +347,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void hideProgress(){
+    private void hideProgress() {
         progressBar.setVisibility(View.GONE);
         viewPager.setVisibility(View.VISIBLE);
     }
 
-    private void noResultFound(){
+    private void noResultFound() {
         tvNotFound.setVisibility(View.VISIBLE);
         viewPager.setVisibility(View.INVISIBLE);
     }
@@ -326,19 +367,19 @@ public class MainActivity extends AppCompatActivity {
             String scgUrl = "http://sales.starcitygames.com/search.php?substring=";
 
             final Document doc1 =
-                    Jsoup.connect(ligamagicUrl+queryValue).get();
+                    Jsoup.connect(ligamagicUrl + queryValue).get();
 
-            Log.d(TAG, "doc: "+doc1.html());
+            Log.d(TAG, "doc: " + doc1.html());
 
             Elements scriptElements = doc1.getElementsByTag("script");
 
             final LojasInfoParser lojasInfoParser = new LojasInfoParser();
             lojasInfoParser.parse(doc1);
 
-            for (Element element: scriptElements) {
-                for (DataNode node : element.dataNodes()){
-                    Log.d(TAG, "node: "+node.getWholeData());
-                    if (node.getWholeData().contains("VETiRaridade")){
+            for (Element element : scriptElements) {
+                for (DataNode node : element.dataNodes()) {
+                    Log.d(TAG, "node: " + node.getWholeData());
+                    if (node.getWholeData().contains("VETiRaridade")) {
 
                         final MagicInfoParser parser = new MagicInfoParser();
                         parser.parse(node.getWholeData());
@@ -369,11 +410,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void continueLoadind() {
-        if (loadController < cards.size()){
-            Log.d(TAG, "INCREMENT CONTROLLER "+loadController);
+        if (loadController < cards.size()) {
+            Log.d(TAG, "INCREMENT CONTROLLER " + loadController);
 
             getLigamagicPage();
-        }else {
+        } else {
             loadController = 0;
 
             Log.d(TAG, "FINISH SEARCH");
@@ -392,10 +433,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showRecycler(LojasInfoParser parser) {
-        ((LojasAdapter)recyclerView.getAdapter()).setListLojas(parser.getLojasInfo());
+        ((LojasAdapter) recyclerView.getAdapter()).setListLojas(parser.getLojasInfo());
         recyclerView.getAdapter().notifyDataSetChanged();
 
-        if (parser.lojasInfo.size() == 0){
+        if (parser.lojasInfo.size() == 0) {
             noResultFound();
         }
     }

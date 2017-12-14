@@ -13,6 +13,7 @@ import retrofit2.http.Query;
 public interface MagicApiRoutes {
 
     @GET("cards")
-    Observable<MagicApiResponse> getMagicCardsByName(@Query("name") String name);
+    Observable<MagicApiResponse> getMagicCardsByName(@Query("name") String name,
+                                                     @Query("language") String language);
 
 }

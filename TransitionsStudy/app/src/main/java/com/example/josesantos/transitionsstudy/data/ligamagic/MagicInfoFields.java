@@ -1,4 +1,4 @@
-package com.example.josesantos.transitionsstudy;
+package com.example.josesantos.transitionsstudy.data.ligamagic;
 
 /**
  * Created by Jose Santos on 24/11/2017.

@@ -1,4 +1,4 @@
-package com.example.josesantos.transitionsstudy;
+package com.example.josesantos.transitionsstudy.data.ligamagic;
 
 import android.util.Log;
 

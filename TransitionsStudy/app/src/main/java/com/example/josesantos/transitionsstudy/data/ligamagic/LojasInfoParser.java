@@ -1,4 +1,4 @@
-package com.example.josesantos.transitionsstudy;
+package com.example.josesantos.transitionsstudy.data.ligamagic;
 
 import android.util.Log;
 
@@ -6,7 +6,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
