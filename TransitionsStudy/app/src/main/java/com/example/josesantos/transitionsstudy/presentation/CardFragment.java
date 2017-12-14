@@ -1,4 +1,4 @@
-package com.example.josesantos.transitionsstudy;
+package com.example.josesantos.transitionsstudy.presentation;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.josesantos.transitionsstudy.data.ligamagic.MagicCardInfo;
+import com.example.josesantos.transitionsstudy.R;
 
 /**
  * Created by josesantos on 25/11/17.
