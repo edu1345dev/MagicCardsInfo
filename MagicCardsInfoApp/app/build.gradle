@@ -34,33 +34,71 @@ ext {
     glide = '4.3.0'
     hockeyApp = '5.0.4'
     pageIndicator = '0.2.0'
+    openBeans = '1.0'
+    openCsv = '4.1'
+    archCompVer = '1.0.0'
+    rxJavaVersion = '2.1.4'
+    okhttpVersion = '3.8.0'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'org.jsoup:jsoup:1.11.2'
 
+    //JSoup
+    implementation 'org.jsoup:jsoup:1.11.2'
+
+    //Android Support
     implementation "com.android.support:appcompat-v7:${supportLibraryVersion}"
     implementation "com.android.support:recyclerview-v7:${supportLibraryVersion}"
     implementation "com.android.support:cardview-v7:${supportLibraryVersion}"
     implementation "com.android.support:support-v4:${supportLibraryVersion}"
+    implementation "com.android.support.constraint:constraint-layout:${constrainLayout}"
+
+    //Retrofit
     implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     implementation "com.squareup.retrofit2:adapter-rxjava2:${retrofitVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}"
+
+    //Dagger
     implementation "com.google.dagger:dagger:${daggerVersion}"
-    implementation "net.hockeyapp.android:HockeySDK:${hockeyApp}"
+    implementation "com.google.dagger:dagger-android:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android-support:${daggerVersion}"
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    implementation "net.hockeyapp.android:HockeySDK:${hockeyApp}"
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:${rxJavaVersion}"
     implementation "io.reactivex.rxjava2:rxandroid:${rxAndroid}"
-    implementation "com.android.support.constraint:constraint-layout:${constrainLayout}"
+
+    //ButterKnife
     implementation "com.jakewharton:butterknife:${butterKnifeVersion}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
+
+    //Glide
     implementation "com.github.bumptech.glide:glide:${glide}"
     annotationProcessor "com.github.bumptech.glide:compiler:${glide}"
+
+    //View page indicator
     implementation "com.romandanylyk:pageindicatorview:${pageIndicator}"
 
-    compile group: 'com.googlecode', name: 'openbeans', version: '1.0'
-    compile group: 'com.opencsv', name: 'opencsv', version: '4.1'
+    //Opens Beans
+    implementation "com.googlecode:openbeans:${openBeans}"
 
+    //Open Csv
+    implementation "com.opencsv:opencsv:${openCsv}"
+
+    //Room
+    implementation "android.arch.persistence.room:runtime:${archCompVer}"
+    annotationProcessor "android.arch.persistence.room:compiler:${archCompVer}"
+    implementation "android.arch.persistence.room:rxjava2:${archCompVer}"
+
+    //Lifecycle arch components
+    implementation "android.arch.lifecycle:common-java8:${archCompVer}"
+    implementation "android.arch.lifecycle:extensions:${archCompVer}"
+    implementation "android.arch.lifecycle:reactivestreams:${archCompVer}"
+    implementation "android.arch.lifecycle:runtime:${archCompVer}"
+    annotationProcessor "android.arch.lifecycle:compiler:${archCompVer}"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             queryHandler.removeCallbacks(searchRunnable);
         }
 
-        queryHandler.postDelayed(getSearchRunnable(), 500);
+        queryHandler.postDelayed(getSearchRunnable(), 800);
 
     }
 

@@ -1,5 +1,6 @@
 package com.android.josesantos.magiccardsinfo.presentation;
 
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,30 +39,37 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
 
         if (lojaInfo.getNome() != null){
             holder.nome.setText(lojaInfo.getNome());
+            holder.nome.setVisibility(View.VISIBLE);
         }else {
             holder.nome.setVisibility(View.INVISIBLE);
         }
 
         if (lojaInfo.getEdition() != null){
             holder.edicao.setText(lojaInfo.getEdition());
+            holder.edicao.setVisibility(View.VISIBLE);
         }else {
             holder.edicao.setVisibility(View.INVISIBLE);
         }
 
         if (lojaInfo.getPrice() != null){
             holder.preco.setText(lojaInfo.getPrice());
+            holder.preco.setVisibility(View.VISIBLE);
         }else {
             holder.preco.setVisibility(View.INVISIBLE);
         }
 
         if (lojaInfo.getPromoPrice() != null){
             holder.precoPromo.setText(lojaInfo.getPromoPrice());
+            holder.precoPromo.setVisibility(View.VISIBLE);
+            holder.preco.setPaintFlags(holder.preco.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
         }else {
+            holder.preco.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
             holder.precoPromo.setVisibility(View.INVISIBLE);
         }
 
         if (lojaInfo.getQtd() != null){
             holder.qtd.setText(lojaInfo.getQtd());
+            holder.qtd.setVisibility(View.VISIBLE);
         }else {
             holder.qtd.setVisibility(View.INVISIBLE);
         }
