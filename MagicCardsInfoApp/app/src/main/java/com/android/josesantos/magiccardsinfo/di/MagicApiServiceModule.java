@@ -7,6 +7,7 @@ import com.android.josesantos.magiccardsinfo.data.ligamagic.Const;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -20,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by josesantos on 18/12/17.
  */
 
+@Module
 public class MagicApiServiceModule {
     private static final String BASE_URL = "base_url";
 

@@ -1,12 +1,11 @@
-package com.android.josesantos.magiccardsinfo.presentation;
+package com.android.josesantos.magiccardsinfo.presentation.main;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,12 +23,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.josesantos.magiccardsinfo.data.ligamagic.LojasInfoParser;
-import com.android.josesantos.magiccardsinfo.data.ligamagic.MagicInfoParser;
 import com.android.josesantos.magiccardsinfo.R;
-import com.android.josesantos.magiccardsinfo.data.api.magicApi.MagicApiService;
 import com.android.josesantos.magiccardsinfo.data.entity.MagicApiCard;
 import com.android.josesantos.magiccardsinfo.data.entity.MagicApiResponse;
+import com.android.josesantos.magiccardsinfo.data.ligamagic.LojasInfoParser;
+import com.android.josesantos.magiccardsinfo.data.ligamagic.MagicInfoParser;
+import com.android.josesantos.magiccardsinfo.presentation.CardsPagerAdapter;
+import com.android.josesantos.magiccardsinfo.presentation.LojasAdapter;
 import com.rd.PageIndicatorView;
 
 import net.hockeyapp.android.CrashManager;
@@ -45,34 +45,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-
+    int loadController = 0;
+    List<String> cards = new ArrayList<>();
     private EditText etNomeCarta;
-
     private RecyclerView recyclerView;
     private ViewPager viewPager;
     private String queryValue;
     private ProgressBar progressBar;
     private TextView tvNotFound;
-    int loadController = 0;
-    List<String> cards = new ArrayList<>();
-    MagicApiService service = new MagicApiService();
     private PopupWindow popupWindow;
     private Handler queryHandler;
     private Runnable searchRunnable;
     private PageIndicatorView pageIndicatorView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         progressBar = findViewById(R.id.progress);
         etNomeCarta = findViewById(R.id.busca);
@@ -161,25 +154,25 @@ public class MainActivity extends AppCompatActivity {
 
         showProgress();
 
-        service.getMagicCardsByName(query)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<MagicApiResponse>() {
-                    @Override
-                    public void onNext(MagicApiResponse value) {
-                        generateListToAdapter(value);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        handleError(e);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        hideProgress();
-                    }
-                });
+//        service.getMagicCardsByName(query)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new DisposableObserver<MagicApiResponse>() {
+//                    @Override
+//                    public void onNext(MagicApiResponse value) {
+//                        generateListToAdapter(value);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        handleError(e);
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//                        hideProgress();
+//                    }
+//                });
     }
 
     private void handleError(Throwable e) {
