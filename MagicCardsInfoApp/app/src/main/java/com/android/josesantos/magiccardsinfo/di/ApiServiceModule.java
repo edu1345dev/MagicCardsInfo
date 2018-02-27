@@ -10,7 +10,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -22,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 @Module
-public class MagicApiServiceModule {
+public class ApiServiceModule {
     private static final String BASE_URL = "base_url";
 
     @Provides
@@ -39,10 +38,8 @@ public class MagicApiServiceModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideHttpClient(HeaderInterceptor headerInterceptor,
-                                   HttpLoggingInterceptor httpInterceptor) {
+    OkHttpClient provideHttpClient(HeaderInterceptor headerInterceptor) {
         return new OkHttpClient.Builder().addInterceptor(headerInterceptor)
-                .addInterceptor(httpInterceptor)
                 .build();
     }
 

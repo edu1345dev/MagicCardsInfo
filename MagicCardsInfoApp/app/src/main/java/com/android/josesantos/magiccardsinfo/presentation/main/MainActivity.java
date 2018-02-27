@@ -50,13 +50,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     int loadController = 0;
     List<String> cards = new ArrayList<>();
+    private PopupWindow popupWindow;
+
     private EditText etNomeCarta;
     private RecyclerView recyclerView;
     private ViewPager viewPager;
     private String queryValue;
     private ProgressBar progressBar;
     private TextView tvNotFound;
-    private PopupWindow popupWindow;
+
     private Handler queryHandler;
     private Runnable searchRunnable;
     private PageIndicatorView pageIndicatorView;
