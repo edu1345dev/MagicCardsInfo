@@ -16,13 +16,11 @@ import java.util.List;
 
 public class LojasInfoParser {
 
-    public List<LojaInfo> lojasInfo = new ArrayList<>();
-
+    private static final String TAG = "LojasInfoParser";
     private static String CURRENCY = "R$";
     private static String QUANTITY = "unid";
     private static String IR_LOJA = "Ir à loja";
-
-    private static final String TAG = "LojasInfoParser";
+    public List<LojaInfo> lojasInfo = new ArrayList<>();
 
     // TODO: 25/11/17 improve method speed
     public void parse(Document doc){
@@ -57,12 +55,30 @@ public class LojasInfoParser {
                     if (isQuantity(element1)){
                         lojaInfo.setQtd(element1.text());
                     }
+
+                    if (isLojaRef(element1)) {
+                        lojaInfo.setLojaUrl(getLojaRef(element1));
+                    }
                 }
 
                 lojasInfo.add(lojaInfo);
 
             }
         }
+    }
+
+    private boolean isLojaRef(Element element) {
+        return element.toString().contains("href");
+    }
+
+    private String getLojaRef(Element element1) {
+        int firstIndex = element1.toString().indexOf("href");
+
+        String firstHalf = element1.toString().substring(firstIndex + 6, element1.toString().length());
+
+        String url = firstHalf.substring(0, firstHalf.indexOf("\""));
+
+        return url;
     }
 
     private boolean isPriceAndPromoPrice(Element element1) {

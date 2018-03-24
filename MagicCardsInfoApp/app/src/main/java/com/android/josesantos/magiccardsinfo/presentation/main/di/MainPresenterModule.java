@@ -1,4 +1,6 @@
-package com.android.josesantos.magiccardsinfo.presentation.main;
+package com.android.josesantos.magiccardsinfo.presentation.main.di;
+
+import com.android.josesantos.magiccardsinfo.presentation.main.MainContracts;
 
 import dagger.Module;
 import dagger.Provides;

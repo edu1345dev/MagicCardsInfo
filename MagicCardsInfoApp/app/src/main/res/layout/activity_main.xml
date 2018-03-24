@@ -14,7 +14,7 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.android.josesantos.magiccardsinfo.presentation.main.MainActivity">
+            tools:context="com.android.josesantos.magiccardsinfo.presentation.main.MainActivityJAva">
 
             <EditText
                 android:id="@+id/busca"
@@ -54,7 +54,7 @@
                 app:piv_radius="4dp"
                 app:piv_selectedColor="@color/colorPrimaryDark"
                 app:piv_unselectedColor="@color/gray"
-                app:piv_viewPager="@+id/view_pager" />
+                app:piv_viewPager="@+id/vp_card_versions" />
 
             <ProgressBar
                 android:id="@+id/progress"

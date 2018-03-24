@@ -1,14 +1,17 @@
 package com.android.josesantos.magiccardsinfo.presentation;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.josesantos.magiccardsinfo.data.ligamagic.LojaInfo;
 import com.android.josesantos.magiccardsinfo.R;
+import com.android.josesantos.magiccardsinfo.data.ligamagic.LojaInfo;
 
 import java.util.List;
 
@@ -18,10 +21,12 @@ import java.util.List;
 
 public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
 
+    private Context context;
     private List<LojaInfo> listLojas;
 
-    public LojasAdapter(List<LojaInfo> listLojas) {
+    public LojasAdapter(List<LojaInfo> listLojas, Context context) {
         this.listLojas = listLojas;
+        this.context = context;
     }
 
     public void setListLojas(List<LojaInfo> listLojas) {
@@ -73,6 +78,13 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
         }else {
             holder.qtd.setVisibility(View.INVISIBLE);
         }
+
+        holder.itemView.setOnClickListener(view -> {
+            String url = "https://www.ligamagic.com.br/" + lojaInfo.getLojaUrl();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            context.startActivity(i);
+        });
     }
 
     @Override

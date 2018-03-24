@@ -17,6 +17,7 @@ public class LojaInfo {
     private String promoPrice;
     @CsvBindByName
     private String qtd;
+    private String lojaUrl;
 
     public String getNome() {
         return nome;
@@ -56,5 +57,13 @@ public class LojaInfo {
 
     public void setQtd(String qtd) {
         this.qtd = qtd;
+    }
+
+    public String getLojaUrl() {
+        return lojaUrl;
+    }
+
+    public void setLojaUrl(String lojaUrl) {
+        this.lojaUrl = lojaUrl;
     }
 }

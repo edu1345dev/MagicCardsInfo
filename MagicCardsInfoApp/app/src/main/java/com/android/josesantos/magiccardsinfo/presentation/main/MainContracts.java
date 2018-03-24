@@ -12,6 +12,9 @@ public interface MainContracts {
 
     interface View {
         void onCardNamesResult(List<String> cardNames);
+
+        void hideProgress();
+
     }
 
     interface Presenter extends BasePresenter<MainContracts.View> {
