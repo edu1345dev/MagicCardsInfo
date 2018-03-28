@@ -72,13 +72,10 @@ public class LojasInfoParser {
     }
 
     private String getLojaRef(Element element1) {
-        int firstIndex = element1.toString().indexOf("href");
 
-        String firstHalf = element1.toString().substring(firstIndex + 6, element1.toString().length());
+        Elements a = element1.getElementsByTag("a");
 
-        String url = firstHalf.substring(0, firstHalf.indexOf("\""));
-
-        return url;
+        return a.attr("href");
     }
 
     private boolean isPriceAndPromoPrice(Element element1) {
