@@ -14,6 +14,6 @@ public interface MagicApiService {
 
     @GET("cards")
     Single<MagicApiResponse> getMagicCardsByName(@Query("name") String name,
-                                                 @Query("language") String language);
+                                                 @Query("main_menu") String language);
 
 }

@@ -1,5 +1,6 @@
 package com.android.josesantos.magiccardsinfo.presentation.main
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -44,6 +45,11 @@ class MainActivity : BaseActivity(), MainContracts.View {
     private var queryValue: String? = null
     private val TAG = MainActivity::class.java.simpleName
     private val TIME = "TIME"
+    val stores = mutableListOf<LojaInfo>()
+    var filteredStores = mutableListOf<LojaInfo>()
+    val editions = mutableListOf<String>()
+    val conditions = mutableListOf<String>()
+    val storeName = mutableListOf<String>()
 
     @Inject
     lateinit var presenter: MainPresenter
@@ -139,27 +145,29 @@ class MainActivity : BaseActivity(), MainContracts.View {
     private fun getLigamagicPage() {
         try {
 
-            val startTime = System.currentTimeMillis()/1000L
-            Log.d(TIME, "START: "+startTime.toString())
+            stores.clear()
+            editions.clear()
+            conditions.clear()
+            storeName.clear()
+
+            val startTime = System.currentTimeMillis() / 1000L
+            Log.d(TIME, "START: " + startTime.toString())
 
             val ligamagicUrl = "http://www.ligamagic.com.br/?view=cards/card&card="
             val scgUrl = "http://sales.starcitygames.com/search.php?substring="
 
             val doc1 = Jsoup.connect(ligamagicUrl + queryValue).get()
 
-            val startElemTime = System.currentTimeMillis()/1000L
-            Log.d(TIME, "START GET ELEMENTS: "+startElemTime.toString()+" TOTAL: "+(startElemTime - startTime))
+            val startElemTime = System.currentTimeMillis() / 1000L
+            Log.d(TIME, "START GET ELEMENTS: " + startElemTime.toString() + " TOTAL: " + (startElemTime - startTime))
 
 //            val scriptElements = doc1.getElementsByTag("script")
 //            val elements = doc1.getElementsByClass("box p10")
 //            val elements1 = doc1.getElementById("card-principal") //id card-info
             val elements2 = doc1.getElementsByAttributeValueContaining("class", "estoque-linha")
 
-
-            val lojas = mutableListOf<LojaInfo>()
-
             elements2.forEach {
-                if (it.getElementsByClass("l-preco").text().isNotEmpty()){
+                if (it.getElementsByClass("l-preco").text().isNotEmpty()) {
                     //todo do something for leiloes
                     it.getElementsByClass("l-preco").text()
                     it.getElementsByClass("l-preco-aux").text()
@@ -168,35 +176,47 @@ class MainActivity : BaseActivity(), MainContracts.View {
 
                 val loja = LojaInfo()
                 val value = it.getElementsByClass("e-col3").text().replace("R$ ", "")
-                if (value.split(" ").size > 1){
-                    loja.price = "R$ "+value.split(" ")[0]
-                    loja.promoPrice = "R$ "+value.split(" ")[1]
-                }else{
-                    loja.price = "R$ "+value
+                if (value.split(" ").size > 1) {
+                    loja.price = "R$ " + value.split(" ")[0]
+                    loja.promoPrice = "R$ " + value.split(" ")[1]
+                } else {
+                    loja.price = "R$ " + value
                 }
 
                 loja.edition = it.getElementsByClass("e-mob-edicao-lbl").text()
+                if (!editions.contains(loja.edition)) {
+                    editions.add(loja.edition)
+                }
 
                 it.getElementsByClass("e-col1").forEach { it1 ->
                     it1.getElementsByAttribute("src").attr("src")
                     loja.nome = it1.getElementsByAttribute("src").attr("title")
+                    if (!storeName.contains(loja.nome)) {
+                        storeName.add(loja.nome)
+                    }
                 }
 
                 loja.condition = it.getElementsByClass("e-col4 e-col4-offmktplace").text()
+                loja.condition?.let {
+                    if (!conditions.contains(it)) {
+                        conditions.add(it)
+                    }
+                }
+
                 loja.qtd = it.getElementsByClass("e-col5 e-col5-offmktplace ").text()
                 it.getElementsByClass("e-col8 e-col8-offmktplace ").forEach { it3 ->
                     loja.lojaUrl = it3.getElementsByAttribute("href").attr("href")
                 }
 
-                lojas.add(loja)
+                stores.add(loja)
             }
 
-            val endFOrEachTime = System.currentTimeMillis()/1000L
-            Log.d(TIME, "END FOR EACH ELEMENTS: "+endFOrEachTime.toString()+" TOTAL: "+(endFOrEachTime - startElemTime))
-            Log.d(TIME, "TOTAL TIME: "+(endFOrEachTime - startTime))
+            val endFOrEachTime = System.currentTimeMillis() / 1000L
+            Log.d(TIME, "END FOR EACH ELEMENTS: " + endFOrEachTime.toString() + " TOTAL: " + (endFOrEachTime - startElemTime))
+            Log.d(TIME, "TOTAL TIME: " + (endFOrEachTime - startTime))
 
             runOnUiThread {
-                showRecycler(lojas)
+                showRecycler(stores)
             }
 
 //            val lojasInfoParser = LojasInfoParser()
@@ -356,7 +376,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.language, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -368,7 +388,76 @@ class MainActivity : BaseActivity(), MainContracts.View {
             R.id.pt_br -> {
                 presenter.setPortugueseLanguage()
             }
+            R.id.condition -> {
+                showConditionDialog()
+            }
+            R.id.edition -> {
+                showEditionDialog()
+            }
+            R.id.store -> {
+                showStoreDialog()
+            }
+            R.id.clear_filter ->{
+                clearFilters()
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showStoreDialog() {
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle("Selecione Loja")
+        alert.setItems(storeName.toTypedArray()) { _, p1 ->
+            filterByStore(storeName[p1])
+        }
+        alert.create().show()
+    }
+
+    private fun clearFilters() {
+        filteredStores.clear()
+        showRecycler(stores)
+    }
+
+    private fun showEditionDialog() {
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle("Selecione Edição")
+        alert.setItems(editions.toTypedArray()) { _, p1 ->
+            filterByEdition(editions[p1])
+        }
+        alert.create().show()
+    }
+
+    private fun filterByEdition(edition: String) {
+        filteredStores = stores.filter {
+            it.edition == edition
+        }.toMutableList()
+
+        showRecycler(filteredStores)
+    }
+
+    //todo merge filters
+    private fun filterByStore(store: String) {
+        filteredStores = stores.filter {
+            it.nome == store
+        }.toMutableList()
+
+        showRecycler(filteredStores)
+    }
+
+    private fun showConditionDialog() {
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle("Selecione Condição")
+        alert.setItems(conditions.toTypedArray()) { _, p1 ->
+            filterByCondition(conditions[p1])
+        }
+        alert.create().show()
+    }
+
+    private fun filterByCondition(condition: String) {
+        filteredStores = stores.filter {
+            it.condition == condition
+        }.toMutableList()
+
+        showRecycler(filteredStores)
     }
 }

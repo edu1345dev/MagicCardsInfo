@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/pt_br"
+        android:title="Português"/>
+    <item android:id="@+id/en_us"
+        android:title="Inglês"/>
+    <item android:id="@+id/condition"
+        android:title="Filtrar Condição"/>
+
+    <item android:id="@+id/edition"
+        android:title="Filtrar Edição"/>
+
+    <item android:id="@+id/store"
+        android:title="Filtrar Loja"/>
+
+    <item android:id="@+id/clear_filter"
+        android:title="Limpar Filtros"/>
+</menu>

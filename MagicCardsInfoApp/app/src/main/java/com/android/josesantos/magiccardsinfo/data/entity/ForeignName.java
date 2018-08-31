@@ -11,7 +11,7 @@ public class ForeignName implements Serializable {
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("language")
+    @SerializedName("main_menu")
     @Expose
     private String language;
 
