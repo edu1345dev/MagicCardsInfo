@@ -11,4 +11,6 @@ import io.reactivex.Single;
 public interface MagicApiDataSource {
 
     Single<MagicApiResponse> getCardsFromApiByName(String cardName);
+
+    void setLanguage(String language);
 }

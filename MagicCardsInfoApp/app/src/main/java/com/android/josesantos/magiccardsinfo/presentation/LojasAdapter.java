@@ -60,7 +60,7 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
             holder.preco.setText(lojaInfo.getPrice());
             holder.preco.setVisibility(View.VISIBLE);
         }else {
-            holder.preco.setVisibility(View.INVISIBLE);
+            holder.preco.setVisibility(View.GONE);
         }
 
         if (lojaInfo.getPromoPrice() != null){
@@ -69,11 +69,11 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
             holder.preco.setPaintFlags(holder.preco.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
         }else {
             holder.preco.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
-            holder.precoPromo.setVisibility(View.INVISIBLE);
+            holder.precoPromo.setVisibility(View.GONE);
         }
 
         if (lojaInfo.getQtd() != null){
-            holder.qtd.setText(lojaInfo.getQtd());
+            holder.qtd.setText(lojaInfo.condition + " "+ lojaInfo.getQtd());
             holder.qtd.setVisibility(View.VISIBLE);
         }else {
             holder.qtd.setVisibility(View.INVISIBLE);

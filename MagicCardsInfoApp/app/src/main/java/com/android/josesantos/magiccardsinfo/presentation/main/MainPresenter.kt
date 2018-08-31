@@ -5,6 +5,8 @@ import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.OnLifecycleEvent
 import android.util.Log
+import com.android.josesantos.magiccardsinfo.data.api.LanguageConstants
+import com.android.josesantos.magiccardsinfo.data.entity.MagicApiCard
 import com.android.josesantos.magiccardsinfo.data.entity.MagicApiResponse
 import com.android.josesantos.magiccardsinfo.model.repository.MagicApiRepositoryImpl
 import com.android.josesantos.magiccardsinfo.util.RunOn
@@ -46,6 +48,8 @@ class MainPresenter
         Log.d(MainPresenter::class.java.simpleName, "On Dettach")
     }
 
+    private var cards: MutableList<MagicApiCard>? = null
+
     override fun searchCardName(cardName: String) {
 
         magicApiRepository.getMagicCardsByName(cardName)
@@ -59,6 +63,7 @@ class MainPresenter
 
                     override fun onSuccess(magicApiResponse: MagicApiResponse) {
                         view.hideProgress()
+                        cards = magicApiResponse.cards
                         view.onCardNamesResult(removeRepeateadResults(magicApiResponse))
                     }
 
@@ -72,19 +77,33 @@ class MainPresenter
         view.hideProgress()
     }
 
-    private fun removeRepeateadResults(apiResponse: MagicApiResponse): List<String> {
-        val cardsResult = ArrayList<String>()
+    private fun removeRepeateadResults(apiResponse: MagicApiResponse): List<MagicApiCard> {
+        val cardsResult = ArrayList<MagicApiCard>()
 
-        for (card in apiResponse.cards) {
-            if (!cardsResult.contains(card.name)) {
-                cardsResult.add(card.name)
+        apiResponse.cards.forEach { card: MagicApiCard? ->
+            if (cardsResult.none { card?.name == it.name }) {
+                cardsResult.add(card!!)
             }
         }
 
         if (cardsResult.isEmpty()) {
-            cardsResult.add("No results found")
+            val card = MagicApiCard()
+            card.name = "No Results Found"
+            cardsResult.add(card)
         }
 
         return cardsResult
+    }
+
+    override fun getSelectedCards(cardName: String) {
+        view.showCards(cards?.filter { it.name == cardName && it.imageUrl != null })
+    }
+
+    override fun setEnglishLanguage() {
+        magicApiRepository.setLanguage(LanguageConstants.EN_US)
+    }
+
+    override fun setPortugueseLanguage() {
+        magicApiRepository.setLanguage(LanguageConstants.PT_BR)
     }
 }

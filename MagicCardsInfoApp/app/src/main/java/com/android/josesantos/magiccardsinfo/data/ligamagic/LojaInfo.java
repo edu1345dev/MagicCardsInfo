@@ -2,6 +2,8 @@ package com.android.josesantos.magiccardsinfo.data.ligamagic;
 
 import com.opencsv.bean.CsvBindByName;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Created by josesantos on 24/11/17.
  */
@@ -18,6 +20,8 @@ public class LojaInfo {
     @CsvBindByName
     private String qtd;
     private String lojaUrl;
+    @Nullable
+    public String condition;
 
     public String getNome() {
         return nome;

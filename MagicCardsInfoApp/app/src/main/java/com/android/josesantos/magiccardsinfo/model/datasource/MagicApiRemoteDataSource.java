@@ -15,6 +15,7 @@ import io.reactivex.Single;
 public class MagicApiRemoteDataSource implements MagicApiDataSource {
 
     MagicApiService magicApiService;
+    private String queryLanguage = LanguageConstants.EN_US;
 
     @Inject
     public MagicApiRemoteDataSource(MagicApiService magicApiService) {
@@ -23,6 +24,11 @@ public class MagicApiRemoteDataSource implements MagicApiDataSource {
 
     @Override
     public Single<MagicApiResponse> getCardsFromApiByName(String cardName) {
-        return magicApiService.getMagicCardsByName(cardName, LanguageConstants.EN_US);
+        return magicApiService.getMagicCardsByName(cardName, queryLanguage);
+    }
+
+    @Override
+    public void setLanguage(String language) {
+        queryLanguage = language;
     }
 }

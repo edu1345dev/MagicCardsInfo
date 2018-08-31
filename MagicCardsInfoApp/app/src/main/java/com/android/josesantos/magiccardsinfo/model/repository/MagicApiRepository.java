@@ -2,6 +2,8 @@ package com.android.josesantos.magiccardsinfo.model.repository;
 
 import com.android.josesantos.magiccardsinfo.data.entity.MagicApiResponse;
 
+import org.jetbrains.annotations.Nullable;
+
 import io.reactivex.Single;
 
 /**
@@ -10,4 +12,6 @@ import io.reactivex.Single;
 
 public interface MagicApiRepository {
     Single<MagicApiResponse> getMagicCardsByName(String cardName);
+
+    void setLanguage(@Nullable String language);
 }

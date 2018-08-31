@@ -1,11 +1,17 @@
 
 package com.android.josesantos.magiccardsinfo.data.entity;
 
+import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MagicApiCard {
+public class MagicApiCard implements Serializable{
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
     @SerializedName("name")
     @Expose
@@ -79,6 +85,31 @@ public class MagicApiCard {
     @SerializedName("id")
     @Expose
     private String id;
+
+    @SerializedName("imageUrl")
+    @Expose
+    private String imageUrl;
+
+    @SerializedName("multiverseid")
+    @Expose
+    private String multiverseid;
+
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getMultiverseid() {
+        return multiverseid;
+    }
+
+    public void setMultiverseid(String multiverseid) {
+        this.multiverseid = multiverseid;
+    }
 
     public String getName() {
         return name;

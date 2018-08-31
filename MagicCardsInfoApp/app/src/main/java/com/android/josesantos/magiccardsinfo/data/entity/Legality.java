@@ -4,7 +4,9 @@ package com.android.josesantos.magiccardsinfo.data.entity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Legality {
+import java.io.Serializable;
+
+public class Legality implements Serializable {
 
     @SerializedName("format")
     @Expose

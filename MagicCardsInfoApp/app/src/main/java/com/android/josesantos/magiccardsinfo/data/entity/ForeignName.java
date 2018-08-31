@@ -4,7 +4,9 @@ package com.android.josesantos.magiccardsinfo.data.entity;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ForeignName {
+import java.io.Serializable;
+
+public class ForeignName implements Serializable {
 
     @SerializedName("name")
     @Expose

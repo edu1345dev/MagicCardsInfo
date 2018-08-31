@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -17,8 +19,8 @@ import android.widget.ListView
 import android.widget.PopupWindow
 import com.android.josesantos.magiccardsinfo.MagicApplication
 import com.android.josesantos.magiccardsinfo.R
+import com.android.josesantos.magiccardsinfo.data.entity.MagicApiCard
 import com.android.josesantos.magiccardsinfo.data.ligamagic.LojaInfo
-import com.android.josesantos.magiccardsinfo.data.ligamagic.LojasInfoParser
 import com.android.josesantos.magiccardsinfo.data.ligamagic.MagicInfoParser
 import com.android.josesantos.magiccardsinfo.presentation.CardsPagerAdapter
 import com.android.josesantos.magiccardsinfo.presentation.LojasAdapter
@@ -41,6 +43,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
     private var searchRunnable: Runnable? = null
     private var queryValue: String? = null
     private val TAG = MainActivity::class.java.simpleName
+    private val TIME = "TIME"
 
     @Inject
     lateinit var presenter: MainPresenter
@@ -67,16 +70,19 @@ class MainActivity : BaseActivity(), MainContracts.View {
 
     }
 
-    override fun onCardNamesResult(cardNames: MutableList<String>?) {
+    override fun onCardNamesResult(cardNames: MutableList<MagicApiCard>?) {
         showPopWindow(cardNames!!)
     }
 
-    private fun showPopWindow(resultsList: List<String>) {
+    private fun showPopWindow(resultsList: List<MagicApiCard>) {
         val arrayString = resultsList.toTypedArray()
 
         val listView = ListView(this)
         listView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayString)
         listView.setOnItemClickListener { adapterView, view, i, l ->
+
+
+            presenter.getSelectedCards(adapterView.adapter.getItem(i).toString())
 
             val query = adapterView.adapter.getItem(i).toString()
 
@@ -114,53 +120,111 @@ class MainActivity : BaseActivity(), MainContracts.View {
     private fun startQuery(query: String) {
         queryValue = query
 
-        showProgress()
+        lojas_recycler.visibility = View.GONE
+        progress_stores.visibility = View.VISIBLE
 
-        val thread = HandlerThread("thread")
+        val thread = HandlerThread("ligamagic-thread")
         thread.start()
 
         val handler = Handler(thread.looper)
         handler.post { this.getLigamagicPage() }
     }
 
+    override fun showCards(cardsList: MutableList<out MagicApiCard>?) {
+        cardsList?.let {
+            showContent(it.toList())
+        }
+    }
+
     private fun getLigamagicPage() {
         try {
+
+            val startTime = System.currentTimeMillis()/1000L
+            Log.d(TIME, "START: "+startTime.toString())
 
             val ligamagicUrl = "http://www.ligamagic.com.br/?view=cards/card&card="
             val scgUrl = "http://sales.starcitygames.com/search.php?substring="
 
             val doc1 = Jsoup.connect(ligamagicUrl + queryValue).get()
 
-            Log.d(TAG, "doc: " + doc1.html())
+            val startElemTime = System.currentTimeMillis()/1000L
+            Log.d(TIME, "START GET ELEMENTS: "+startElemTime.toString()+" TOTAL: "+(startElemTime - startTime))
 
-            val scriptElements = doc1.getElementsByTag("script")
+//            val scriptElements = doc1.getElementsByTag("script")
+//            val elements = doc1.getElementsByClass("box p10")
+//            val elements1 = doc1.getElementById("card-principal") //id card-info
+            val elements2 = doc1.getElementsByAttributeValueContaining("class", "estoque-linha")
 
-            val lojasInfoParser = LojasInfoParser()
-            lojasInfoParser.parse(doc1)
 
-            for (element in scriptElements) {
-                for (node in element.dataNodes()) {
-                    Log.d(TAG, "node: " + node.wholeData)
-                    if (node.wholeData.contains("VETiRaridade")) {
+            val lojas = mutableListOf<LojaInfo>()
 
-                        val parser = MagicInfoParser()
-                        parser.parse(node.wholeData)
-
-                        val lojasInfoParser1 = LojasInfoParser()
-                        lojasInfoParser1.parse(doc1)
-
-                        //                        loadController++;
-                        //
-                        //                        continueLoadind();
-
-                        runOnUiThread {
-                            showContent(parser)
-                            showRecycler(lojasInfoParser1)
-                        }
-
-                    }
+            elements2.forEach {
+                if (it.getElementsByClass("l-preco").text().isNotEmpty()){
+                    //todo do something for leiloes
+                    it.getElementsByClass("l-preco").text()
+                    it.getElementsByClass("l-preco-aux").text()
+                    return@forEach
                 }
+
+                val loja = LojaInfo()
+                val value = it.getElementsByClass("e-col3").text().replace("R$ ", "")
+                if (value.split(" ").size > 1){
+                    loja.price = "R$ "+value.split(" ")[0]
+                    loja.promoPrice = "R$ "+value.split(" ")[1]
+                }else{
+                    loja.price = "R$ "+value
+                }
+
+                loja.edition = it.getElementsByClass("e-mob-edicao-lbl").text()
+
+                it.getElementsByClass("e-col1").forEach { it1 ->
+                    it1.getElementsByAttribute("src").attr("src")
+                    loja.nome = it1.getElementsByAttribute("src").attr("title")
+                }
+
+                loja.condition = it.getElementsByClass("e-col4 e-col4-offmktplace").text()
+                loja.qtd = it.getElementsByClass("e-col5 e-col5-offmktplace ").text()
+                it.getElementsByClass("e-col8 e-col8-offmktplace ").forEach { it3 ->
+                    loja.lojaUrl = it3.getElementsByAttribute("href").attr("href")
+                }
+
+                lojas.add(loja)
             }
+
+            val endFOrEachTime = System.currentTimeMillis()/1000L
+            Log.d(TIME, "END FOR EACH ELEMENTS: "+endFOrEachTime.toString()+" TOTAL: "+(endFOrEachTime - startElemTime))
+            Log.d(TIME, "TOTAL TIME: "+(endFOrEachTime - startTime))
+
+            runOnUiThread {
+                showRecycler(lojas)
+            }
+
+//            val lojasInfoParser = LojasInfoParser()
+//            lojasInfoParser.parse(doc1)
+
+//            for (element in scriptElements) {
+//                for (node in element.dataNodes()) {
+//                    Log.d(TAG, "node: " + node.wholeData)
+//                    if (node.wholeData.contains("VETiRaridade")) {
+//
+//                        val parser = MagicInfoParser()
+//                        parser.parse(node.wholeData)
+//
+//                        val lojasInfoParser1 = LojasInfoParser()
+//                        lojasInfoParser1.parse(doc1)
+//
+//                        //                        loadController++;
+//                        //
+//                        //                        continueLoadind();
+//
+//                        runOnUiThread {
+//                            showContent(parser)
+//                            showRecycler(lojasInfoParser1)
+//                        }
+//
+//                    }
+//                }
+//            }
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -182,11 +246,27 @@ class MainActivity : BaseActivity(), MainContracts.View {
         view_pager_indicator.setVisibility(View.VISIBLE)
     }
 
-    private fun showRecycler(parser: LojasInfoParser) {
-        (lojas_recycler.getAdapter() as LojasAdapter).setListLojas(parser.getLojasInfo())
+    private fun showContent(parser: List<MagicApiCard>) {
+        val cardsPagerAdapter = CardsPagerAdapter(supportFragmentManager)
+        cardsPagerAdapter.seApiListCards(parser)
+
+        hideProgress()
+
+        vp_card_versions.setAdapter(cardsPagerAdapter)
+        vp_card_versions.getAdapter().notifyDataSetChanged()
+
+        view_pager_indicator.setViewPager(vp_card_versions)
+        view_pager_indicator.setVisibility(View.VISIBLE)
+    }
+
+    private fun showRecycler(lojas: List<LojaInfo>) {
+        progress_stores.visibility = View.GONE
+        lojas_recycler.visibility = View.VISIBLE
+
+        (lojas_recycler.getAdapter() as LojasAdapter).setListLojas(lojas)
         lojas_recycler.getAdapter().notifyDataSetChanged()
 
-        if (parser.lojasInfo.size == 0) {
+        if (lojas.isEmpty()) {
             noResultFound()
         }
     }
@@ -202,7 +282,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
 
     private fun configureQuery() {
 
-        busca.setOnEditorActionListener({ v, actionId, event ->
+        busca.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
                 requestCardsFromApi(busca.getText().toString())
@@ -210,7 +290,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
                 return@setOnEditorActionListener false
             }
             false
-        })
+        }
 
         busca.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -225,6 +305,8 @@ class MainActivity : BaseActivity(), MainContracts.View {
                 delayQueryStart()
             }
         })
+
+        busca.setText("Goblin Lore")
     }
 
     fun delayQueryStart() {
@@ -271,5 +353,22 @@ class MainActivity : BaseActivity(), MainContracts.View {
     private fun noResultFound() {
         tv_not_found.setVisibility(View.VISIBLE)
         vp_card_versions.setVisibility(View.INVISIBLE)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.language, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.en_us -> {
+                presenter.setEnglishLanguage()
+            }
+            R.id.pt_br -> {
+                presenter.setPortugueseLanguage()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
