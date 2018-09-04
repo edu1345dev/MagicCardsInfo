@@ -38,7 +38,7 @@ public class LojasInfoParser {
                     Log.d(TAG, "children: "+element1.text());
 
                     if (isNome(element1)){
-                        lojaInfo.setNome(getNome(element1));
+                        lojaInfo.setStoreName(getNome(element1));
                     }
 
                     if(isEdition(element1)){

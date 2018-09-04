@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,12 +21,12 @@ import com.android.josesantos.magiccardsinfo.MagicApplication
 import com.android.josesantos.magiccardsinfo.R
 import com.android.josesantos.magiccardsinfo.data.entity.MagicApiCard
 import com.android.josesantos.magiccardsinfo.data.ligamagic.LojaInfo
-import com.android.josesantos.magiccardsinfo.presentation.CardsPagerAdapter
 import com.android.josesantos.magiccardsinfo.presentation.LojasAdapter
+import com.android.josesantos.magiccardsinfo.presentation.SimpleListAdapter
 import com.android.josesantos.magiccardsinfo.presentation.base.BaseActivity
-import com.android.josesantos.magiccardsinfo.presentation.main.di.DaggerMainComponent
-import com.android.josesantos.magiccardsinfo.presentation.main.di.MainPresenterModule
-import kotlinx.android.synthetic.main.activity_main.*
+import com.android.josesantos.magiccardsinfo.presentation.main.di.DaggerFilterCardsComponent
+import com.android.josesantos.magiccardsinfo.presentation.main.di.FilterCardsPresenterModule
+import kotlinx.android.synthetic.main.activity_filter_cards.*
 import org.jsoup.Jsoup
 import java.io.IOException
 import javax.inject.Inject
@@ -35,11 +34,11 @@ import javax.inject.Inject
 /**
  * Created by josesantos on 26/02/18.
  */
-class MainActivity : BaseActivity(), MainContracts.View {
+class FilterCardsActivity : BaseActivity(), FilterCardsContracts.View {
     private var popupWindow: PopupWindow? = null
     private var queryHandler: Handler? = null
     private var searchRunnable: Runnable? = null
-    private val TAG = MainActivity::class.java.simpleName
+    private val TAG = FilterCardsActivity::class.java.simpleName
     private val TIME = "TIME"
     private var storesInfo = mutableListOf<LojaInfo>()
     private var filteredStores = mutableListOf<LojaInfo>()
@@ -51,16 +50,15 @@ class MainActivity : BaseActivity(), MainContracts.View {
     private var storeFilter = ""
 
     @Inject
-    lateinit var presenter: MainPresenter
+    lateinit var presenter: FilterCardsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_filter_cards)
         configurePopWindow()
         configureQuery()
         configureRecycler()
-        configureViewPager()
         initFilters()
 
         initializePresenter()
@@ -88,8 +86,8 @@ class MainActivity : BaseActivity(), MainContracts.View {
     }
 
     private fun initializePresenter() {
-        DaggerMainComponent.builder()
-                .mainPresenterModule(MainPresenterModule(this))
+        DaggerFilterCardsComponent.builder()
+                .filterCardsPresenterModule(FilterCardsPresenterModule(this))
                 .mainRepositoryComponent(MagicApplication.getInstance().mainRepositoryComponent)
                 .build()
                 .inject(this)
@@ -107,12 +105,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
         listView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayString)
         listView.setOnItemClickListener { adapterView, view, i, l ->
 
-
-            presenter.getSelectedCards(adapterView.adapter.getItem(i).toString())
-
-            val query = adapterView.adapter.getItem(i).toString()
-
-            startQuery(query)
+            addCardToWantList(adapterView.adapter.getItem(i).toString())
 
             popupWindow!!.dismiss()
 
@@ -131,6 +124,13 @@ class MainActivity : BaseActivity(), MainContracts.View {
 
     }
 
+    private fun addCardToWantList(cardName: String) {
+        if (!cardsNameAdapter.list.contains(cardName)) {
+            cardsNameAdapter.addCard(cardName)
+            cardsNameAdapter.notifyDataSetChanged()
+        }
+    }
+
     private fun hideKeyboard() {
         val inputManager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(this.currentFocus!!.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
@@ -143,7 +143,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
 
     }
 
-    private fun startQuery(query: String) {
+    private fun startQuery() {
         lojas_recycler.visibility = View.INVISIBLE
         progress_stores.visibility = View.VISIBLE
 
@@ -151,16 +151,10 @@ class MainActivity : BaseActivity(), MainContracts.View {
         thread.start()
 
         val handler = Handler(thread.looper)
-        handler.post { this.getLigamagicPage(query) }
+        handler.post { this.getLigamagicPage() }
     }
 
-    override fun showCards(cardsList: MutableList<out MagicApiCard>?) {
-        cardsList?.let {
-            showContent(it.toList())
-        }
-    }
-
-    private fun getLigamagicPage(queryValue: String) {
+    private fun getLigamagicPage() {
         try {
 
             storesInfo.clear()
@@ -174,7 +168,7 @@ class MainActivity : BaseActivity(), MainContracts.View {
             val ligamagicUrl = "http://www.ligamagic.com.br/?view=cards/card&card="
             val scgUrl = "http://sales.starcitygames.com/search.php?substring="
 
-            var queryList = listOf(queryValue, "Lightning Bolt", "Delver of Secrets", "Overgrown Tomb", "Temple Garden", "Stomping Ground", "Garruk Relentless")
+            var queryList = cardsNameAdapter.list
 
 //            val doc1 = Jsoup.connect(ligamagicUrl + queryValue).get()
 //            val doc2 = Jsoup.connect(ligamagicUrl + "Lightning Bolt").get()
@@ -267,6 +261,10 @@ class MainActivity : BaseActivity(), MainContracts.View {
     }
 
     private fun getByStoreNameList(stores: MutableList<LojaInfo>): MutableList<LojaInfo> {
+        if (stores.isEmpty()){
+            return mutableListOf()
+        }
+
         val storeAux = mutableListOf<LojaInfo>()
 
         val storesSorted = stores.sortedBy { it.storeName }.toMutableList()
@@ -301,19 +299,6 @@ class MainActivity : BaseActivity(), MainContracts.View {
         return storeAux
     }
 
-    private fun showContent(parser: List<MagicApiCard>) {
-        val cardsPagerAdapter = CardsPagerAdapter(supportFragmentManager)
-        cardsPagerAdapter.seApiListCards(parser)
-
-        hideProgress()
-
-        vp_card_versions.adapter = cardsPagerAdapter
-        vp_card_versions.adapter.notifyDataSetChanged()
-
-        view_pager_indicator.setViewPager(vp_card_versions)
-        view_pager_indicator.visibility = View.VISIBLE
-    }
-
     private fun showRecycler(lojas: List<LojaInfo>) {
         progress_stores.visibility = View.GONE
         lojas_recycler.visibility = View.VISIBLE
@@ -326,14 +311,20 @@ class MainActivity : BaseActivity(), MainContracts.View {
         }
     }
 
-    private fun configureViewPager() {
-        vp_card_versions.adapter = CardsPagerAdapter(supportFragmentManager)
-    }
-
     private val storesAdapter = LojasAdapter(emptyList(), this)
+
+    private lateinit var cardsNameAdapter: SimpleListAdapter
 
     private fun configureRecycler() {
 //        lojas_recycler.layoutManager = GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false)
+        cardsNameAdapter = SimpleListAdapter(mutableListOf(), this)
+        rv_cards_name.layoutManager = LinearLayoutManager(this)
+        rv_cards_name.adapter = cardsNameAdapter
+
+        cardsNameAdapter.setOnClickListener { _, _ ->
+            startQuery()
+        }
+
         lojas_recycler.layoutManager = LinearLayoutManager(this)
         lojas_recycler.adapter = storesAdapter
     }
@@ -363,6 +354,10 @@ class MainActivity : BaseActivity(), MainContracts.View {
                 delayQueryStart()
             }
         })
+
+        bt_search.setOnClickListener {
+            startQuery()
+        }
 
         busca.setText("Goblin Lore")
     }
@@ -403,7 +398,6 @@ class MainActivity : BaseActivity(), MainContracts.View {
 
     override fun hideProgress() {
         progress.visibility = View.GONE
-        vp_card_versions.visibility = View.VISIBLE
     }
 
     private fun noResultFound() {

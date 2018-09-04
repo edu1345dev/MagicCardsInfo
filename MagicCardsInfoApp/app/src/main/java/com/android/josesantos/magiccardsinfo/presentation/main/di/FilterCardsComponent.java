@@ -12,7 +12,7 @@ import dagger.Component;
  * Created by josesantos on 26/12/17.
  */
 @ActivityScope
-@Component(modules = {MainPresenterModule.class, SchedulerModule.class}, dependencies = {MainRepositoryComponent.class})
-public interface MainComponent {
-    void inject(MainActivity activityKotlin);
+@Component(modules = {FilterCardsPresenterModule.class, SchedulerModule.class}, dependencies = {MainRepositoryComponent.class})
+public interface FilterCardsComponent {
+    void inject(FilterCardsActivity activityKotlin);
 }

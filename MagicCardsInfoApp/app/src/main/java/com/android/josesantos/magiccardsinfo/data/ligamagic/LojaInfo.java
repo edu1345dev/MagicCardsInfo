@@ -9,8 +9,12 @@ import org.jetbrains.annotations.Nullable;
  */
 
 public class LojaInfo {
+
+    public static final String STORE_LABEL = "STORE_LABEL";
+    public static final String STORE_DATA = "STORE_DATA";
+
     @CsvBindByName
-    private String nome;
+    private String storeName;
     @CsvBindByName
     private String edition;
     @CsvBindByName
@@ -22,13 +26,22 @@ public class LojaInfo {
     private String lojaUrl;
     @Nullable
     public String condition;
+    private String cardName;
 
-    public String getNome() {
-        return nome;
+    public String getCardName() {
+        return cardName;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public String getEdition() {

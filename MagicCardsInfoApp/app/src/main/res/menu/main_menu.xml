@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/pt_br"
+        android:visible="false"
         android:title="Português"/>
     <item android:id="@+id/en_us"
-        android:title="Inglês"/>
+        android:title="Inglês"
+        android:visible="false"/>
     <item android:id="@+id/condition"
-        android:title="Filtrar Condição"/>
+        android:title="Condição"/>
 
     <item android:id="@+id/edition"
-        android:title="Filtrar Edição"/>
+        android:title="Edição"/>
 
     <item android:id="@+id/store"
-        android:title="Filtrar Loja"/>
+        android:title="Loja"/>
 
     <item android:id="@+id/clear_filter"
         android:title="Limpar Filtros"/>

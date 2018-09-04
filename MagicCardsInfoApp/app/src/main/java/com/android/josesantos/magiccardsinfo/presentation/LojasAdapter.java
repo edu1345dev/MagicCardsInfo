@@ -2,6 +2,7 @@ package com.android.josesantos.magiccardsinfo.presentation;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -42,18 +43,25 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
     public void onBindViewHolder(Loja holder, int position) {
         LojaInfo lojaInfo = listLojas.get(position);
 
-        if (lojaInfo.getNome() != null){
-            holder.nome.setText(lojaInfo.getNome());
+        if (lojaInfo.getStoreName() != null){
+            if (lojaInfo.getCardName() == null){
+                holder.nome.setText(lojaInfo.getStoreName());
+                holder.itemView.setBackgroundColor(Color.RED);
+            }else {
+                holder.nome.setText(lojaInfo.getCardName());
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+            }
+
             holder.nome.setVisibility(View.VISIBLE);
         }else {
-            holder.nome.setVisibility(View.INVISIBLE);
+            holder.nome.setVisibility(View.GONE);
         }
 
         if (lojaInfo.getEdition() != null){
             holder.edicao.setText(lojaInfo.getEdition());
             holder.edicao.setVisibility(View.VISIBLE);
         }else {
-            holder.edicao.setVisibility(View.INVISIBLE);
+            holder.edicao.setVisibility(View.GONE);
         }
 
         if (lojaInfo.getPrice() != null){
@@ -76,7 +84,7 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
             holder.qtd.setText(lojaInfo.condition + " "+ lojaInfo.getQtd());
             holder.qtd.setVisibility(View.VISIBLE);
         }else {
-            holder.qtd.setVisibility(View.INVISIBLE);
+            holder.qtd.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(view -> {
@@ -107,7 +115,7 @@ public class LojasAdapter extends RecyclerView.Adapter<LojasAdapter.Loja> {
         }
 
         private void setViews(View itemView) {
-            nome = itemView.findViewById(R.id.nome);
+            nome = itemView.findViewById(R.id.storeName);
             edicao = itemView.findViewById(R.id.edicao);
             preco = itemView.findViewById(R.id.preco);
             precoPromo = itemView.findViewById(R.id.preco_promo);
