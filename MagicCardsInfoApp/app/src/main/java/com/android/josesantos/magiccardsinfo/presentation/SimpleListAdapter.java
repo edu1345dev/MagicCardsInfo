@@ -62,6 +62,13 @@ public class SimpleListAdapter extends RecyclerView.Adapter<SimpleListAdapter.Te
         return cardsList;
     }
 
+    @NotNull
+    public void setCardsList(List<String> cards) {
+        cardsList.clear();
+        cardsList = cards;
+        notifyDataSetChanged();
+    }
+
     public void setOnClickListener(@NotNull RecyclerViewListener.OnItemClickListener onItemClickListener) {
         clickListener = onItemClickListener;
     }

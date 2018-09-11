@@ -26,6 +26,8 @@ import com.android.josesantos.magiccardsinfo.presentation.SimpleListAdapter
 import com.android.josesantos.magiccardsinfo.presentation.base.BaseActivity
 import com.android.josesantos.magiccardsinfo.presentation.main.di.DaggerFilterCardsComponent
 import com.android.josesantos.magiccardsinfo.presentation.main.di.FilterCardsPresenterModule
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_filter_cards.*
 import org.jsoup.Jsoup
 import java.io.IOException
@@ -48,6 +50,7 @@ class FilterCardsActivity : BaseActivity(), FilterCardsContracts.View {
     private var editionFilter = ""
     private var conditionFilter = ""
     private var storeFilter = ""
+    private val gson = Gson()
 
     @Inject
     lateinit var presenter: FilterCardsPresenter
@@ -63,6 +66,21 @@ class FilterCardsActivity : BaseActivity(), FilterCardsContracts.View {
 
         initializePresenter()
 
+    }
+
+    private fun saveCardsList(){
+        getSharedPreferences(this.packageName, Context.MODE_PRIVATE).edit().putString("cards", gson.toJson(cardsNameAdapter.list)).apply()
+    }
+
+    private fun recoverCardsList(){
+        val cards = getSharedPreferences(this.packageName, Context.MODE_PRIVATE).getString("cards", "")
+
+        val listType = object : TypeToken<List<String>>() {
+        }.type
+
+        val list = gson.fromJson<List<String>>(cards, listType )
+
+        cardsNameAdapter.setCardsList(list)
     }
 
     private fun initFilters() {
@@ -321,9 +339,9 @@ class FilterCardsActivity : BaseActivity(), FilterCardsContracts.View {
         rv_cards_name.layoutManager = LinearLayoutManager(this)
         rv_cards_name.adapter = cardsNameAdapter
 
-        cardsNameAdapter.setOnClickListener { _, _ ->
-            startQuery()
-        }
+//        cardsNameAdapter.setOnClickListener { _, _ ->
+//            startQuery()
+//        }
 
         lojas_recycler.layoutManager = LinearLayoutManager(this)
         lojas_recycler.adapter = storesAdapter
@@ -358,8 +376,6 @@ class FilterCardsActivity : BaseActivity(), FilterCardsContracts.View {
         bt_search.setOnClickListener {
             startQuery()
         }
-
-        busca.setText("Goblin Lore")
     }
 
     fun delayQueryStart() {
@@ -412,10 +428,12 @@ class FilterCardsActivity : BaseActivity(), FilterCardsContracts.View {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.en_us -> {
-                presenter.setEnglishLanguage()
+//                presenter.setEnglishLanguage()
+                saveCardsList()
             }
             R.id.pt_br -> {
-                presenter.setPortugueseLanguage()
+//                presenter.setPortugueseLanguage()
+                recoverCardsList()
             }
             R.id.condition -> {
                 showConditionDialog()

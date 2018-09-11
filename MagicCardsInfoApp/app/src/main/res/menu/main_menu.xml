@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/pt_br"
-        android:visible="false"
-        android:title="Português"/>
+        android:visible="true"
+        android:title="Recuperar"/>
     <item android:id="@+id/en_us"
-        android:title="Inglês"
-        android:visible="false"/>
+        android:title="Salvar"
+        android:visible="true"/>
     <item android:id="@+id/condition"
         android:title="Condição"/>
 
